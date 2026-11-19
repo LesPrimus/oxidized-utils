@@ -1,0 +1,13 @@
+[package]
+name = "echor"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+clap.workspace = true
+
+[dev-dependencies]
+anyhow.workspace = true
+assert_cmd.workspace = true
+predicates.workspace = true
+pretty_assertions.workspace = true
