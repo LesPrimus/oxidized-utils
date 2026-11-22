@@ -33,8 +33,11 @@ impl NamedReader {
         Ok(buffer)
     }
 
-    pub fn name(&self) -> &str {
-        &self.name
+    pub fn print_header(&self, add_new_line: bool) {
+        if add_new_line {
+            println!();
+        }
+        println!("==> {} <==", self.name);
     }
 }
 

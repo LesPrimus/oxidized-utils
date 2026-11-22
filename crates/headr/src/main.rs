@@ -1,6 +1,6 @@
 use anyhow::Context;
 use clap::Parser;
-use std::io::BufRead;
+use std::io::{BufRead, Read};
 
 use crate::{cli::Args, named_reader::NamedReader};
 
@@ -24,9 +24,14 @@ fn run(args: Args) -> anyhow::Result<()> {
         match NamedReader::open(filename) {
             Ok(reader) => {
                 if should_print_header {
-                    print_header(reader.name(), idx > 0);
+                    reader.print_header(idx > 0);
                 }
-                read(reader, lines).with_context(|| format!("failed to read {filename}"))?;
+
+                match args.bytes {
+                    Some(n) => read_bytes(reader, n),
+                    None => read_lines(reader, lines),
+                }
+                .with_context(|| format!("failed to read {filename}"))?
             }
             Err(e) => eprintln!("{filename}: {e}"),
         }
@@ -34,14 +39,14 @@ fn run(args: Args) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn print_header(name: &str, add_new_line: bool) {
-    if add_new_line {
-        println!();
-    }
-    println!("==> {name} <==");
+fn read_bytes(reader: impl Read, bytes: u64) -> anyhow::Result<()> {
+    let mut buffer = vec![];
+    reader.take(bytes).read_to_end(&mut buffer)?;
+    print!("{}", String::from_utf8_lossy(&buffer));
+    Ok(())
 }
 
-fn read(mut reader: impl BufRead, lines: u64) -> anyhow::Result<()> {
+fn read_lines(mut reader: impl BufRead, lines: u64) -> anyhow::Result<()> {
     let mut buf = String::new();
 
     for _ in 0..lines {
