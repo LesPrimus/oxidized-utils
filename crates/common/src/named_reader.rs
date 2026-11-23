@@ -25,7 +25,8 @@ impl NamedReader {
         })
     }
 
-    pub fn open(filename: &str) -> io::Result<Self> {
+    pub fn open(filename: impl AsRef<str>) -> io::Result<Self> {
+        let filename = filename.as_ref();
         let buffer = match filename {
             "-" => Self::from_stdin(),
             _ => Self::from_filename(filename)?,
