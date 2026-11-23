@@ -2,10 +2,10 @@ use anyhow::Context;
 use clap::Parser;
 use std::io::{BufRead, Read};
 
-use crate::{cli::Args, named_reader::NamedReader};
+use crate::cli::Args;
+use common::NamedReader;
 
 mod cli;
-mod named_reader;
 
 fn main() {
     if let Err(e) = run(Args::parse()) {
@@ -24,7 +24,7 @@ fn run(args: Args) -> anyhow::Result<()> {
         match NamedReader::open(filename) {
             Ok(reader) => {
                 if should_print_header {
-                    reader.print_header(idx > 0);
+                    print_header(reader.name().unwrap_or("stdin"), idx > 0);
                 }
 
                 match args.bytes {
@@ -37,6 +37,13 @@ fn run(args: Args) -> anyhow::Result<()> {
         }
     }
     Ok(())
+}
+
+fn print_header(name: &str, add_new_line: bool) {
+    if add_new_line {
+        println!();
+    }
+    println!("==> {name} <==");
 }
 
 fn read_bytes(reader: impl Read, bytes: u64) -> anyhow::Result<()> {

@@ -5,14 +5,14 @@ use std::{
 
 pub struct NamedReader {
     reader: Box<dyn BufRead>,
-    name: String,
+    name: Option<String>,
 }
 
 impl NamedReader {
     fn from_stdin() -> Self {
         Self {
             reader: Box::new(BufReader::new(io::stdin())),
-            name: "stdin".to_string(),
+            name: None,
         }
     }
 
@@ -21,7 +21,7 @@ impl NamedReader {
 
         Ok(Self {
             reader: Box::new(BufReader::new(file)),
-            name: filename.to_string(),
+            name: Some(filename.to_string()),
         })
     }
 
@@ -33,11 +33,9 @@ impl NamedReader {
         Ok(buffer)
     }
 
-    pub fn print_header(&self, add_new_line: bool) {
-        if add_new_line {
-            println!();
-        }
-        println!("==> {} <==", self.name);
+    /// The file name, or `None` when reading from stdin.
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_deref()
     }
 }
 

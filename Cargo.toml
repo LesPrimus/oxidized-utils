@@ -9,6 +9,7 @@ edition = "2024"
 [workspace.dependencies]
 # Shared dependency versions go here; crates opt in with `dep.workspace = true`.
 clap = { version = "4", features = ["derive"] }
+common = { path = "crates/common" }
 
 # Test-only dependencies used throughout the book.
 anyhow = "1"
