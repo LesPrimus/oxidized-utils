@@ -18,6 +18,7 @@ predicates = "3"
 pretty_assertions = "1"
 # 0.8 matches the book's tests (rand::thread_rng, distributions::Alphanumeric).
 rand = "0.8"
+tempfile = "3"
 
 [profile.release]
 lto = true
