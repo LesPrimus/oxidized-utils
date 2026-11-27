@@ -1,4 +1,3 @@
-use std::fmt::Display;
 use crate::cli::{Args, ArgsExtract};
 use clap::Parser;
 use common::NamedReader;
@@ -63,16 +62,12 @@ fn run(args: Args) -> anyhow::Result<()> {
 }
 
 fn extract<T: Copy>(items: &[T], ranges: &[Range<usize>]) -> Vec<T> {
-    let mut out:  Vec<T> = Vec::new();
-
-    for range in ranges {
-        for idx in range.clone() {
-            if let Some(&value) = items.get(idx) {
-                out.push(value)
-            }
-        }
-    }
-    out
+    ranges
+        .iter()
+        .cloned()
+        .flat_map(|range| range.filter_map(|idx| items.get(idx)))
+        .copied()
+        .collect()
 }
 
 fn get_fields(reader: NamedReader, position_list: &[Range<usize>]) {
@@ -82,7 +77,7 @@ fn get_fields(reader: NamedReader, position_list: &[Range<usize>]) {
 fn get_bytes(reader: NamedReader, position_list: &[Range<usize>]) -> anyhow::Result<()> {
     for line in reader.lines() {
         let line = line?;
-        let  bytes = line.as_bytes();
+        let bytes = line.as_bytes();
         let out = extract(bytes, position_list);
         println!("{}", String::from_utf8_lossy(&out));
     }
