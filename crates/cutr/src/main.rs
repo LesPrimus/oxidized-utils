@@ -53,7 +53,7 @@ fn run(args: Args) -> anyhow::Result<()> {
 
         match &extract {
             ExtractedParam::Fields(list) => get_fields(reader, list),
-            ExtractedParam::Bytes(list) => get_bytes(reader, list),
+            ExtractedParam::Bytes(list) => get_bytes(reader, list)?,
             ExtractedParam::Chars(list) => get_chars(reader, list)?,
         }
     }
@@ -65,8 +65,23 @@ fn get_fields(reader: NamedReader, position_list: &[Range<usize>]) {
     todo!()
 }
 
-fn get_bytes(reader: NamedReader, position_list: &[Range<usize>]) {
-    todo!()
+fn get_bytes(reader: NamedReader, position_list: &[Range<usize>]) -> anyhow::Result<()> {
+    for line in reader.lines() {
+        let line = line?;
+        let  bytes = line.as_bytes();
+        let mut out: Vec<u8> = Vec::new();
+
+        for range in position_list {
+            for idx in range.clone() {
+                if let Some(&byte) = bytes.get(idx) {
+                    out.push(byte);
+                }
+            }
+        }
+        println!("{}", String::from_utf8_lossy(&out));
+    }
+
+    Ok(())
 }
 
 fn get_chars(reader: NamedReader, position_list: &[Range<usize>]) -> anyhow::Result<()> {
