@@ -1,17 +1,15 @@
-use std::ops::Range;
 use clap::Parser;
-
+use common::parsers::{PositionList, parse_range};
 use crate::cli::{Args, ArgsExtract};
 
 mod cli;
 
-type PositionList = Vec<Range<usize>>;
+
 pub enum ExtractedParam {
     Fields(PositionList),
     Bytes(PositionList),
     Chars(PositionList),
 }
-
 
 fn main() {
     if let Err(e) = run(Args::parse()) {
@@ -25,13 +23,19 @@ fn run(args: Args) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn parse_extract(params: &ArgsExtract) -> anyhow::Result<ExtractedParam>{
-    // todo extract ranges here..
+fn parse_extract(params: &ArgsExtract) -> anyhow::Result<ExtractedParam> {
     let extracted = match params {
-        ArgsExtract { fields: Some(value), ..} => ExtractedParam::Fields(todo!()),
-        ArgsExtract { bytes: Some(value), ..} => ExtractedParam::Bytes(todo!()),
-        ArgsExtract { chars: Some(value), ..} => ExtractedParam::Chars(todo!()),
-        _ => unreachable!()
+        ArgsExtract {
+            fields: Some(value),
+            ..
+        } => ExtractedParam::Fields(parse_range(value)?),
+        ArgsExtract {
+            bytes: Some(value), ..
+        } => ExtractedParam::Bytes(parse_range(value)?),
+        ArgsExtract {
+            chars: Some(value), ..
+        } => ExtractedParam::Chars(parse_range(value)?),
+        _ => unreachable!(),
     };
     Ok(extracted)
 }
