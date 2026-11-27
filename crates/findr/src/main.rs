@@ -1,7 +1,7 @@
 use crate::cli::{Args, EntryType};
 use clap::Parser;
 use regex::Regex;
-use walkdir::{WalkDir, DirEntry};
+use walkdir::{DirEntry, WalkDir};
 
 mod cli;
 
@@ -25,11 +25,12 @@ fn filter_names(entry: &DirEntry, names: &[Regex]) -> bool {
 }
 
 fn filter_entry_types(entry: &DirEntry, types: &[EntryType]) -> bool {
-    types.is_empty() || types.iter().any(|entry_type| match entry_type {
-        EntryType::File => entry.file_type().is_file(),
-        EntryType::Dir => entry.file_type().is_dir(),
-        EntryType::Link => entry.file_type().is_symlink(),
-    })
+    types.is_empty()
+        || types.iter().any(|entry_type| match entry_type {
+            EntryType::File => entry.file_type().is_file(),
+            EntryType::Dir => entry.file_type().is_dir(),
+            EntryType::Link => entry.file_type().is_symlink(),
+        })
 }
 
 fn filter_path(path: &str, args: &Args) {

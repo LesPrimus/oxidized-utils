@@ -1,9 +1,8 @@
+use crate::cli::{Args, ArgsExtract};
 use clap::Parser;
 use common::parsers::{PositionList, parse_range};
-use crate::cli::{Args, ArgsExtract};
 
 mod cli;
-
 
 pub enum ExtractedParam {
     Fields(PositionList),

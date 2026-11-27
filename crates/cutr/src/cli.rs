@@ -14,7 +14,7 @@ pub struct Args {
 
 #[derive(Debug, Clone, clap::Args)]
 #[group(required = true, multiple = false)]
-pub struct  ArgsExtract {
+pub struct ArgsExtract {
     #[arg(short, long)]
     pub fields: Option<String>,
 
