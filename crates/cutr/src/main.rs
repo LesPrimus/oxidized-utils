@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use crate::cli::{Args, ArgsExtract};
 use clap::Parser;
 use common::NamedReader;
@@ -61,6 +62,19 @@ fn run(args: Args) -> anyhow::Result<()> {
     Ok(())
 }
 
+fn extract<T: Copy>(items: &[T], ranges: &[Range<usize>]) -> Vec<T> {
+    let mut out:  Vec<T> = Vec::new();
+
+    for range in ranges {
+        for idx in range.clone() {
+            if let Some(&value) = items.get(idx) {
+                out.push(value)
+            }
+        }
+    }
+    out
+}
+
 fn get_fields(reader: NamedReader, position_list: &[Range<usize>]) {
     todo!()
 }
@@ -69,18 +83,9 @@ fn get_bytes(reader: NamedReader, position_list: &[Range<usize>]) -> anyhow::Res
     for line in reader.lines() {
         let line = line?;
         let  bytes = line.as_bytes();
-        let mut out: Vec<u8> = Vec::new();
-
-        for range in position_list {
-            for idx in range.clone() {
-                if let Some(&byte) = bytes.get(idx) {
-                    out.push(byte);
-                }
-            }
-        }
+        let out = extract(bytes, position_list);
         println!("{}", String::from_utf8_lossy(&out));
     }
-
     Ok(())
 }
 
@@ -88,17 +93,7 @@ fn get_chars(reader: NamedReader, position_list: &[Range<usize>]) -> anyhow::Res
     for line in reader.lines() {
         let line = line?;
         let chars: Vec<char> = line.chars().collect();
-
-        let mut out = String::new();
-
-        for range in position_list {
-            for idx in range.clone() {
-                if let Some(&char) = chars.get(idx) {
-                    out.push(char);
-                }
-            }
-        }
-
+        let out: String = extract(&chars, position_list).iter().collect();
         println!("{out}");
     }
     Ok(())
